@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_title">Domination!</string>
+    <string name="app_name">Domination</string>
+    <string name="play_label">Play</string>
+    <string name="how_to_play_label">How to Play</string>
+    <string name="about_label">About</string>
+    <string name="quit_label">Quit</string>
+    <string name="about_title">About Domination</string>
+    <string name="about_text">\
+    	Domination is a game built by Bryan and Jon so that they do something productive with their time instead of playing video games all night.
+    </string>
+</resources>
