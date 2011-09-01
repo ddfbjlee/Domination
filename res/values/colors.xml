@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<color name="background">#336666ff</color>
+	<color name="board_background">#ffe6f0ff</color>
+	<color name="square_highlight">#ffffffff</color>
+	<color name="square_light">#64c6d4ef</color>
+	<color name="square_dark">#6456648f</color>
 </resources>

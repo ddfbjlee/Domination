@@ -36,6 +36,16 @@ public class Domination extends Activity implements OnClickListener {
     	case R.id.quit_button:
     		finish();
     		break;
+    	case R.id.play_button:
+    		Intent j = new Intent(this, Game.class);
+    		startActivity(j);
+    		break;	
     	}
+
+    }
+    
+    private void startGame(int i) {	
+    	Intent intent = new Intent(this, Game.class);
+    	startActivity(intent);
     }
 }
