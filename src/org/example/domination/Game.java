@@ -1,5 +1,7 @@
 package org.example.domination;
 
+import org.example.domination.model.Board;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -8,7 +10,7 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 public class Game extends Activity {
-	private int board[];
+	private Board board;
 	
 	private BoardView boardView;
 	
