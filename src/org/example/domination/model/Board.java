@@ -2,26 +2,9 @@ package org.example.domination.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Board {
-	
-	public class Position {
-		private int x;
-		private int y;
-		
-		public Position(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-		
-		public int x() {
-			return x;
-		}
-		
-		public int y() {
-			return y;
-		}
-	}
 	
 	private Map<Position, Piece> pieces;
 	
@@ -32,6 +15,10 @@ public class Board {
 		pieces = new HashMap<Position, Piece>();
 	}
 	
+	public Set<Position> getPositions() {
+		return pieces.keySet();
+	}
+	
 	/**
 	 * Gets the piece located at the given x-y coordinates.
 	 * @param x
@@ -39,7 +26,11 @@ public class Board {
 	 * @return Piece, or null if no piece at those coordinates.
 	 */
 	public Piece getPiece(int x, int y) {
-		return pieces.get(new Position(x, y));
+		return getPiece(new Position(x, y));
+	}
+	
+	public Piece getPiece(Position pos) {
+		return pieces.get(pos);
 	}
 	
 	/**
