@@ -43,4 +43,18 @@ public class Board {
 	public void setPiece(Piece piece, int x, int y) {
 		pieces.put(new Position(x, y), piece);
 	}
+	
+	/**
+	 * If a piece exists at the starting position, move it to the
+	 * ending position.
+	 * @param startPos
+	 * @param endPos
+	 */
+	public void movePiece(Position startPos, Position endPos) {
+		Piece piece = pieces.get(startPos);
+		if (piece != null) {
+			pieces.remove(startPos);
+			pieces.put(endPos, piece);
+		}
+	}
 }

@@ -16,4 +16,19 @@ public class Position {
 	public int getY() {
 		return y;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		boolean result = false;
+	    if (other instanceof Position) {
+	    	Position that = (Position) other;
+	        result = (this.getX() == that.getX() && this.getY() == that.getY());
+	    }
+	    return result;
+	}
+	
+	@Override
+	public int hashCode() {
+        return (41 * (41 + getX()) + getY());
+    }
 }

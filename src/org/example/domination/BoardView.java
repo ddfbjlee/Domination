@@ -12,12 +12,22 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class BoardView extends View {
+	// Logging
+	private static final String TAG = "domination.BoardView";
+	
+	// Context
 	private final Game game;
+	
+	// Board configuration
 	private float width;	//width of one tile
 	private float height;	//height of one tile
+	
+	// ?
 	private int selX;		//X index of selection
 	private int selY;		//Y index of selection
 	private final Rect selRect = new Rect();
@@ -44,6 +54,7 @@ public class BoardView extends View {
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
+		Log.d(TAG, "Drawing the board");
 		Paint background = new Paint();
 		background.setColor(getResources().getColor(R.color.board_background));
 		Paint dark = new Paint();
@@ -57,12 +68,48 @@ public class BoardView extends View {
 		// Draw all the pieces on the board.
 		Board board = game.getBoard();
 		Set<Position> positions = board.getPositions();
+		Position sp = game.getSelectedPosition();
+		if (sp != null) {
+			Log.d(TAG, "Selected position x: " + sp.getX() + " y: " + sp.getY());
+		} else {
+			Log.d(TAG, "No selected position");
+		}
 		for (Position position : positions) {
 			Piece piece = board.getPiece(position);
+			int resourceID;
+			if (position.equals(game.getSelectedPosition())) {
+				Log.d(TAG, "Drawing piece at position x: " + position.getX() + " y: " + position.getY() + " with selected state");
+				resourceID = piece.getSelectedResourceID();
+			} else {
+				Log.d(TAG, "Drawing piece at position x: " + position.getX() + " y: " + position.getY() + " with normal state");
+				resourceID = piece.getResourceID();
+			}
+			
 			// This is somewhat inefficient if it's known that one player's pieces will always use a particular
 			// image. If that's the case, we should decode the bitmap once at the start of the game and reuse it.
-			Bitmap image = BitmapFactory.decodeResource(getResources(), piece.getResourceID());
+			Bitmap image = BitmapFactory.decodeResource(getResources(), resourceID);
 			canvas.drawBitmap(image, width * position.getX(), height * position.getY(), null);
 		}
+	}
+	
+	public boolean onTouchEvent(MotionEvent event) {
+		int action = event.getAction();
+	    float x = event.getX();
+	    float y = event.getY();
+	    Log.d(TAG, "Touch event triggered at x: " + x + " y: " + y);
+	    
+	    // Normalize the touch coordinates to a board position.
+	    // Currently assuming fixed 10x10 board like the rest of this class.
+	    int normX = (int) (x / width);
+	    int normY = (int) (y / height);
+	    
+	    if (action == MotionEvent.ACTION_DOWN) {
+	    	// Not sure how critical the return value actually is for this method.
+	    	boolean result = game.selectTile(normX, normY);
+	    	invalidate();
+	    	return result;
+	    } else {
+	    	return false;
+	    }
 	}
 }
