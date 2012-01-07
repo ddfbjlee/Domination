@@ -1,6 +1,7 @@
 package org.example.domination;
 
 import org.example.domination.model.Board;
+import org.example.domination.model.Player;
 import org.example.domination.model.Piece;
 import org.example.domination.model.Position;
 
@@ -25,11 +26,13 @@ public class Game extends Activity {
 		// Initialize game components.
 		board = new Board();
 		selectedPosition = null;
+		Player player1 = new Player(1);
+		Player player2 = new Player(2);
 		
 		// Initialize pieces in set locations for testing.
-		board.setPiece(new Piece(R.drawable.blob, R.drawable.blob_selected), 0, 0);
-		board.setPiece(new Piece(R.drawable.blob, R.drawable.blob_selected), 0, 2);
-		board.setPiece(new Piece(R.drawable.blob, R.drawable.blob_selected), 0, 4);
+		board.setPiece(new Piece(R.drawable.greenblob1, R.drawable.greenblob1_selected, 1, player1), 0, 0);
+		board.setPiece(new Piece(R.drawable.redblob2, R.drawable.redblob2_selected, 2, player2), 0, 2);
+		board.setPiece(new Piece(R.drawable.greenblob3, R.drawable.greenblob3_selected, 3, player1), 0, 4);
 		
 		boardView = new BoardView(this);
 		setContentView(boardView);
@@ -58,7 +61,11 @@ public class Game extends Activity {
 	 *    a) If there is no piece selected, do nothing.
 	 *    b) If there is a piece selected, move it there.
 	 * 2) There is a piece in the selected tile.
-	 *    a) Select it.
+	 *    a) If the selected piece belongs to the same player, select it.
+	 *    b) The selected piece belongs to the opposing player.
+	 *    	i)   If the current piece is stronger than the selected piece, remove the selected piece and move the current piece.
+	 *    	ii)  If the current piece is weaker than the selected piece, remove the current piece.
+	 *    	iii) If the current piece is the same strength as the selected piece, remove both.
 	 *       
 	 * @param x
 	 * @param y
@@ -71,6 +78,7 @@ public class Game extends Activity {
 		}
 		Position targetPosition = new Position(x, y);
 		Piece targetPiece = board.getPiece(targetPosition);
+		Piece currentPiece = board.getPiece(selectedPosition);
 		if (targetPiece == null) {
 			if (selectedPosition == null) {
 				return false;
@@ -80,10 +88,40 @@ public class Game extends Activity {
 				selectedPosition = null;
 				return true;
 			}
-		} else {
-			Log.d(TAG, "Setting selected position");
-			selectedPosition = targetPosition;
-			return true;
+		} else {			
+			if(currentPiece == null) {
+				Log.d(TAG, "Setting selected position");
+				selectedPosition = targetPosition;
+				return true;
+			} else {
+				Player currentPiecePlayer = currentPiece.getPlayer();
+				Player targetPiecePlayer = targetPiece.getPlayer();
+				int currentPlayer = currentPiecePlayer.getPlayerID();
+				int targetPlayer = targetPiecePlayer.getPlayerID();
+				if(currentPlayer == targetPlayer) {
+					Log.d(TAG, "Setting selected position");
+					selectedPosition = targetPosition;
+					return true;
+				} else {
+					if(currentPiece.getStrength() > targetPiece.getStrength())
+					{
+						Log.d(TAG, "Current Piece replaces selected Piece");
+						board.movePieceAndDestroy(selectedPosition, targetPosition);
+						return true;
+					}
+					else if(currentPiece.getStrength() < targetPiece.getStrength()) {
+						Log.d(TAG, "Selected Piece gets destroyed");
+						board.destroyPiece(selectedPosition);
+						return true;
+					}
+					else {
+						Log.d(TAG, "Both current and selected pieces get destroyed");
+						board.destroyPiece(selectedPosition);
+						board.destroyPiece(targetPosition);
+						return true;
+					}
+				}
+			}
 		}
 	}
 }

@@ -57,4 +57,18 @@ public class Board {
 			pieces.put(endPos, piece);
 		}
 	}
+	
+	public void movePieceAndDestroy(Position startPos, Position endPos) {
+		Piece piece = pieces.get(startPos);
+		if (piece != null) {
+			pieces.remove(endPos);
+			pieces.remove(startPos);
+			pieces.put(endPos, piece);
+		}
+	}
+	
+	public void destroyPiece(Position pos)
+	{
+		pieces.remove(pos);
+	}
 }
