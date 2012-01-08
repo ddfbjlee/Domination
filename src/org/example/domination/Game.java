@@ -57,6 +57,13 @@ public class Game extends Activity {
 	}
 	
 	/**
+	 * Clear the currently selected position.
+	 */
+	protected void clearSelectedPosition() {
+		selectedPosition = null;
+	}
+	
+	/**
 	 * Business logic for interacting with the game.
 	 * 1) There is no piece in the selected tile.
 	 *    a) If there is no piece selected, do nothing.

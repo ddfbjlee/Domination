@@ -30,6 +30,10 @@ public class BoardView extends View {
 	// Incremental motion events
 	private float lastHandledX;
 	private float lastHandledY;
+	private int scrollOffsetX;
+	private int scrollOffsetY;
+	
+	private static final int SCROLL_THRESHOLD = 5;
 	
 	// ?
 	private int selX;		//X index of selection
@@ -43,6 +47,8 @@ public class BoardView extends View {
 		height = 72;
 		lastHandledX = -1;
 		lastHandledY = -1;
+		scrollOffsetX = 0;
+		scrollOffsetY = 0;
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 	}
@@ -108,25 +114,36 @@ public class BoardView extends View {
 	    
 	    // Normalize the touch coordinates to a board position.
 	    // Currently assuming fixed 10x10 board like the rest of this class.
-	    int normX = (int) (x / width);
-	    int normY = (int) (y / height);
+	    int normX = (int) ((x + scrollOffsetX) / width);
+	    int normY = (int) ((y + scrollOffsetY)/ height);
 	    
 	    if (action == MotionEvent.ACTION_DOWN) {
+	    	Log.d(TAG, "Selecting tile x: " + normX + " y: " + normY);
 	    	boolean result = game.selectTile(normX, normY);
 	    	lastHandledX = x;
 	    	lastHandledY = y;
 	    	invalidate();
 	    	return result;
 	    } else if (action == MotionEvent.ACTION_MOVE) {
+	    	Log.d(TAG, "Move event");
 	    	float newX = event.getX();
-	    	float newY = event.getY();
+	    	float newY = event.getY();	    	
 	    	if (lastHandledX > 0 && lastHandledY > 0) {
 	    		int changeX = (int) (lastHandledX - newX);
 	    		int changeY = (int) (lastHandledY - newY);
-	    		scrollBy(changeX, changeY);
+	    		
+	    		// A scroll threshold makes it easier to select a piece without accidentally scrolling,
+	    		// which clears the current selection.
+	    		if (Math.abs(changeX) > SCROLL_THRESHOLD || Math.abs(changeY) > SCROLL_THRESHOLD) {
+		    		game.clearSelectedPosition();
+		    		scrollBy(changeX, changeY);
+		    		scrollOffsetX = scrollOffsetX + changeX;
+		    		scrollOffsetY = scrollOffsetY + changeY;
+			    	lastHandledX = newX;
+			    	lastHandledY = newY;
+		    	}
 	    	}
-	    	lastHandledX = newX;
-	    	lastHandledY = newY;
+
 	    	return true;
 	    } else if (action == MotionEvent.ACTION_UP) {
 	    	lastHandledX = -1;
