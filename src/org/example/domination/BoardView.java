@@ -27,6 +27,10 @@ public class BoardView extends View {
 	private float width;	//width of one tile
 	private float height;	//height of one tile
 	
+	// Incremental motion events
+	private float lastHandledX;
+	private float lastHandledY;
+	
 	// ?
 	private int selX;		//X index of selection
 	private int selY;		//Y index of selection
@@ -35,17 +39,21 @@ public class BoardView extends View {
 	public BoardView (Context context) {
 		super(context);
 		this.game = (Game) context;
+		width = 72;
+		height = 72;
+		lastHandledX = -1;
+		lastHandledY = -1;
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 	}
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		width = w / 10f;
+		Log.d(TAG, "width: " + w + " height: " + h);
+/*		width = w / 10f;
 		height = h / 10f;
-		getRect(selX, selY, selRect);
+		getRect(selX, selY, selRect);*/
 		super.onSizeChanged(w, h, oldw, oldh);
-		
 	}
 	
 	private void getRect(int x, int y, Rect rect) {
@@ -104,10 +112,26 @@ public class BoardView extends View {
 	    int normY = (int) (y / height);
 	    
 	    if (action == MotionEvent.ACTION_DOWN) {
-	    	// Not sure how critical the return value actually is for this method.
 	    	boolean result = game.selectTile(normX, normY);
+	    	lastHandledX = x;
+	    	lastHandledY = y;
 	    	invalidate();
 	    	return result;
+	    } else if (action == MotionEvent.ACTION_MOVE) {
+	    	float newX = event.getX();
+	    	float newY = event.getY();
+	    	if (lastHandledX > 0 && lastHandledY > 0) {
+	    		int changeX = (int) (lastHandledX - newX);
+	    		int changeY = (int) (lastHandledY - newY);
+	    		scrollBy(changeX, changeY);
+	    	}
+	    	lastHandledX = newX;
+	    	lastHandledY = newY;
+	    	return true;
+	    } else if (action == MotionEvent.ACTION_UP) {
+	    	lastHandledX = -1;
+	    	lastHandledX = -1;
+	    	return true;
 	    } else {
 	    	return false;
 	    }

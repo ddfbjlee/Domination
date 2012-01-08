@@ -8,6 +8,7 @@ import org.example.domination.model.Position;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
 
 public class Game extends Activity {
 	// Logging
@@ -35,7 +36,7 @@ public class Game extends Activity {
 		board.setPiece(new Piece(R.drawable.greenblob3, R.drawable.greenblob3_selected, 3, player1), 0, 4);
 		
 		boardView = new BoardView(this);
-		setContentView(boardView);
+		setContentView(boardView, new ViewGroup.LayoutParams(720, 720));
 		boardView.requestFocus();
 	}
 	
@@ -66,10 +67,12 @@ public class Game extends Activity {
 	 *    	i)   If the current piece is stronger than the selected piece, remove the selected piece and move the current piece.
 	 *    	ii)  If the current piece is weaker than the selected piece, remove the current piece.
 	 *    	iii) If the current piece is the same strength as the selected piece, remove both.
+	 * Currently always returns true, until we have a case where we'd want to stop
+	 * handling subsequent events in the gesture.
 	 *       
 	 * @param x
 	 * @param y
-	 * @return whether or not we did something (only false in 1a right now)
+	 * @return true
 	 */
 	protected boolean selectTile(int x, int y) {
 		Log.d(TAG, "Calling selectTile on x: " + x + " y: " + y);
@@ -81,7 +84,7 @@ public class Game extends Activity {
 		Piece currentPiece = board.getPiece(selectedPosition);
 		if (targetPiece == null) {
 			if (selectedPosition == null) {
-				return false;
+				return true;
 			} else {
 				Log.d(TAG, "Moving piece");
 				board.movePiece(selectedPosition, targetPosition);
